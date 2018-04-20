@@ -25,9 +25,9 @@ repositories {
     }
 }
 
-task classpath (dependsOn: configurations.testRuntime) {
+task env (dependsOn: configurations.runtime) {
     doLast {
-        println "export CLASSPATH=${configurations.testRuntime.collect { File file -> file.absolutePath } join ':' }"
+        println "export CLASSPATH=${(configurations.runtime + sourceSets.main.runtimeClasspath).collect { File file -> file.absolutePath } join ':' }"
     }
 }
 
