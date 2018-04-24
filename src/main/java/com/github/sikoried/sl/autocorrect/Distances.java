@@ -6,7 +6,15 @@ import java.util.List;
 
 public class Distances {
 	public static int hamming(String a, String b, boolean strict) {
-		throw new IllegalArgumentException();
+		if (strict && a.length() != b.length())
+			throw new IllegalArgumentException();
+
+		int d = 0;
+		for (int i = 0; i < a.length() && i < b.length(); i++)
+			if (a.charAt(i) != b.charAt(i))
+				d++;
+
+		return d + Math.abs(a.length() - b.length());
 	}
 
 	public static int edit(String a, String b) {
@@ -102,14 +110,17 @@ public class Distances {
 
 	static Pair<Integer, Integer> coord(char a) {
 		final String[] layout = {
-				"qwertyuiop",
-				"asdfghjkl",
-				"zxcvbnm"
+				"qwertyuiopü",
+				"asdfghjklöä",
+				"zxcvbnmß"
 		};
 
 		int i = 0, j;
-		while ((j = layout[i].indexOf(a)) == -1)
+		while ((j = layout[i].indexOf(a)) == -1) {
 			i++;
+			if (i >= layout.length)
+				break;
+		}
 
 		return Pair.of(i, j);
 	}
