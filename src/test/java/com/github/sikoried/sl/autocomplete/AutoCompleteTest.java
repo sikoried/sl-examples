@@ -42,10 +42,9 @@ class AutoCompleteTest {
 
 		List<String> sents = new LinkedList<>();
 		final int n = 10;
-		final int len = 12;
 		final int choices = 25;
 		for (int i = 0; i < n; i++)
-			sents.add(sample(ac, len, choices));
+			sents.add(sample(ac, 0, choices));
 
 		for (String s : sents)
 			System.out.println(s);
@@ -67,6 +66,9 @@ class AutoCompleteTest {
 	private String sample(NGramModel ac, int len, int n) {
 		Random r = new Random();
 		List<String> sent = new LinkedList<>();
+
+		if (len == 0)
+			len = Integer.MAX_VALUE;
 
 		// start with beginning-of-sentence symbol
 		sent.add("<s>");
