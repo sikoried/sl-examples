@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class NGramModel {
 	static Logger logger = LogManager.getLogger(NGramModel.class);
 
-	private static class NGram {
+	public static class NGram {
 		/// context; natural temporal order
 		String[] w;
 
@@ -127,32 +127,8 @@ public class NGramModel {
 		this.order = order;
 	}
 
-	/// Offer `n` suggestions on how to complete the given history
-	List<Pair<String, Double>> complete(String[] w, int n) {
-		logger.info("completing " + Arrays.toString(w));
-
-		// trim the history to min(len, order-1) since it will lead to misses
-		if (w.length > order - 1)
-			return complete(Arrays.copyOfRange(w, w.length - order + 1, w.length), n);
-
-		List<Pair<String, Double>> suggestions = ngrams.stream()
-				.filter(ng -> ng.w.length == w.length + 1)
-				.filter(ng -> ng.startsWith(w))
-				.sorted(Comparator.comparingDouble(NGram::getLogp).reversed())
-				.limit(n)
-				.map(ng -> Pair.of(ng.token(), ng.logp))
-				.collect(Collectors.toList());
-
-		// poop.
-		if (suggestions.size() == 0) {
-			String[] shorter = Arrays.copyOfRange(w, 1, w.length);
-			logger.info("falling back to " + Arrays.toString(shorter));
-			suggestions = complete(shorter, n);
-		}
-
-		return suggestions;
-	}
-
+	List<NGram> getNgrams() { return ngrams; }
+	int getOrder() { return order; }
 
 	static NGramModel fromArpa(BufferedReader model) throws IOException {
 		String l;
