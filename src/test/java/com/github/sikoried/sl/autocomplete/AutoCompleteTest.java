@@ -35,7 +35,7 @@ class AutoCompleteTest {
 	@Test
 	void testAutoCompleteTheses() throws IOException {
 		ClassLoader classLoader = AutoCompleteTest.class.getClassLoader();
-		File file = new File(classLoader.getResource("ngram-models/hsro-theses.3g.gz").getFile());
+		File file = new File(classLoader.getResource("ngram-models/th-rosenheim-theses.3g.gz").getFile());
 		InputStream fileStream = new FileInputStream(file);
 		InputStream gzipStream = new GZIPInputStream(fileStream);
 		NGramModel ac = NGramModel.fromArpa(new BufferedReader(new InputStreamReader(gzipStream)));
@@ -73,7 +73,7 @@ class AutoCompleteTest {
 		// start with beginning-of-sentence symbol
 		sent.add("<s>");
 		for (int i = 0; i < len; i++) {
-			List<Pair<String, Double>> suggestions = ac.complete(sent.toArray(new String[0]), n);
+			List<Pair<String, Double>> suggestions = Generator.complete(ac, sent.toArray(new String[0]), n);
 			System.out.println(suggestions);
 
 			// make random choice
