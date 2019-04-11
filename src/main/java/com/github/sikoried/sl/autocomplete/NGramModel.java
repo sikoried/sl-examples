@@ -80,6 +80,18 @@ public class NGramModel {
 			return true;
 		}
 
+		/// does v match exactly the history of this n-gram?
+		boolean matchHistory(String[] v) {
+			if (w.length != v.length + 1)
+				return false;
+
+			for (int i = 0; i < v.length; i++)
+				if (!w[i].equals(v[i]))
+					return false;
+
+			return true;
+		}
+
 		/// does v (exactly) match w?
 		boolean matches(String[] v) {
 			if (w.length != v.length)
@@ -120,13 +132,20 @@ public class NGramModel {
 
 	private int order;
 	private List<NGram> ngrams;
+	private Set<String> vocab;
 
 	private NGramModel(List<NGram> ngrams, int order) {
 		this.ngrams = ngrams;
 		this.order = order;
+
+//		for (NGram n : ngrams) {
+//			if (n.w.length == 1)
+//				vocab.add(n.w[0]);
+//		}
 	}
 
 	List<NGram> getNgrams() { return ngrams; }
+	Set<String> getVocab() { return vocab; }
 	int getOrder() { return order; }
 
 	static NGramModel fromArpa(BufferedReader model) throws IOException {

@@ -34,4 +34,26 @@ class EDTest {
         ED.suggest(vocab, "about", 5)
                 .forEach(System.out::println);
     }
+
+    @Test
+    void edit2() {
+
+        System.out.println(ED.weight('a', 'q'));
+        System.out.println(ED.weight('a', 'w'));
+        System.out.println(ED.weight('a', 's'));
+        System.out.println(ED.weight('a', 'd'));
+        System.out.println(ED.weight('a', 'g'));
+        System.out.println(ED.weight('a', 'h'));
+
+        System.out.println();
+
+        System.out.println(ED.edit("nicht ausgeloggt", "licht ausgenockt", 1, 1, 1));
+        System.out.println(ED.edit2("nicht ausgeloggt", "licht ausgenockt", 1, 1, 1));
+
+        System.out.println();
+
+        System.out.println(ED.edit("hans", "haus", 1, 1, 1));
+        System.out.println(ED.edit2("hans", "haus", 1, 1, 1));
+        System.out.println(ED.edit2("hans", "haps", 1, 1, 1));
+    }
 }
