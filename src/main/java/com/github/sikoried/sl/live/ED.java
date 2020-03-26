@@ -16,11 +16,70 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
 public class ED {
-    private static double min(double d1, double... ds) {
+    static double min(double d1, double... ds) {
         double m = d1;
         for (double d : ds)
             m = Math.min(m, d);
         return m;
+    }
+
+    static String[] keymap = {
+            "1234567890-=",
+            "qwertyuiop[]\\",
+            "asdfghjkl;'",
+            "zxcvbnm,./",
+            " "
+    };
+
+    static Pair<Integer, Integer> locate(char c) {
+        for (int i = 0; i < keymap.length; i++) {
+            if (keymap[i].contains("" + c)) {
+                int p = keymap[i].indexOf(c);
+                if (p >= 0)
+                    return Pair.of(i, p);
+            }
+        }
+
+        // default?
+        return Pair.of(-1, -1);
+    }
+
+    public static double weight(char a, char b) {
+        Pair<Integer, Integer> pa, pb;
+        pa = locate(a);
+        pb = locate(b);
+
+        // Euclidean
+        double dist = Math.sqrt(
+                Math.pow(pa.getLeft() - pb.getLeft(), 2) +
+                        Math.pow(pa.getRight() - pb.getRight(), 2));
+
+        // scale?
+        return 1. + (1. - 1. / dist);
+    }
+
+    public static double edit2(String a, String b,
+                              double cr, double ci, double cd) {
+        int la = a.length();
+        int lb = b.length();
+        double D[][] = new double [la+1][lb+1];
+
+        for (int i = 1; i <= la; i++) D[i][0] = i*ci;
+        for (int j = 1; j <= lb; j++) D[0][j] = j*cd;
+
+        for (int i = 1; i <= la; i++) {
+            for (int j = 1; j <= lb; j++) {
+                double d = (a.charAt(i-1) == b.charAt(j-1)
+                        ? 0
+                        : cr * weight(a.charAt(i-1), b.charAt(j-1)));
+
+                D[i][j] = min(D[i-1][j-1]+d,
+                        D[i-1][j]+cd,
+                        D[i][j-1]+ci);
+            }
+        }
+
+        return D[la][lb];
     }
 
     public static double edit(String a, String b,
@@ -88,6 +147,20 @@ public class ED {
                 .collect(Collectors.toList());
     }
 
+    public static List<Pair<String, Double>> suggest3(
+            List<Pair<String, Long>> vocab,
+            String cand,
+            int n) {
+        double offs = Math.log(vocab.stream().mapToLong(Pair::getRight).sum());
+        return vocab.stream()
+                .map(p -> Pair.of(p.getLeft(),
+                        -Math.log(1. + Math.min(6.0, edit2(cand, p.getLeft(), 1, 1, 1)))
+                                + (Math.log(p.getRight()) - offs) * 0.05))
+                .sorted(Comparator.comparing(Pair<String, Double>::getRight).reversed())
+                .limit(n)
+                .collect(Collectors.toList());
+    }
+
     public static void main(String[] args) throws IOException, URISyntaxException {
         Scanner in = new Scanner(System.in);
 
@@ -97,7 +170,9 @@ public class ED {
         while ((s = in.nextLine()) != null) {
 //            ED.suggest(vocab, s, 5)
 //                    .forEach(System.out::println);
-            ED.suggest2(vocab, s, 5)
+//            ED.suggest2(vocab, s, 5)
+//                    .forEach(System.out::println);
+            ED.suggest3(vocab, s, 5)
                     .forEach(System.out::println);
         }
     }
